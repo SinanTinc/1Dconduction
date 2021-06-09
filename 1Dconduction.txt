@@ -1,0 +1,334 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp18
+{
+    class Program
+    {
+        public static double Rehe(double hız, double diameter, double kinvis)
+        {
+            double x = 10;
+            x = Math.Pow(x, -6);
+            kinvis = kinvis * x;
+            diameter = diameter / 1000;
+            double sonuc = 0;
+            sonuc = hız * diameter / kinvis;
+            return sonuc;
+        }
+        public static double Nuhe(double rey, double prand)
+        {
+            double sonuc = 0;
+            if (rey >= 0.4 && rey <= 4)
+            {
+                double x = rey;
+                x = Math.Pow(x, 0.330);
+                double y = prand;
+                double b = 1.0 / 3.0;
+                y = Math.Pow(y, b);
+                sonuc = 0.989 * x * y;
+                return sonuc;
+            }
+            else if (rey > 4 && rey <= 40)
+            {
+                double x = rey;
+                x = Math.Pow(x, 0.385);
+                double y = prand;
+                double b = 1.0 / 3.0;
+                y = Math.Pow(y, b);
+                sonuc = 0.911 * x * y;
+                return sonuc;
+            }
+            else if (rey > 40 && rey <= 4000)
+            {
+                double x = rey;
+                x = Math.Pow(x, 0.466);
+                double y = prand;
+                double b = 1.0 / 3.0;
+                y = Math.Pow(y, b);
+                sonuc = 0.683 * x * y;
+                return sonuc;
+            }
+            else if (rey > 4000 && rey <= 40000)
+            {
+                double x = rey;
+                x = Math.Pow(x, 0.193);
+                double y = prand;
+                double b = 1.0 / 3.0;
+                y = Math.Pow(y, b);
+                sonuc = 0.618 * x * y;
+                return sonuc;
+            }
+            else if (rey > 40000 && rey <= 400000)
+            {
+                double x = rey;
+                x = Math.Pow(x, 0.027);
+                double y = prand;
+                double b = 1.0 / 3.0;
+                y = Math.Pow(y, b);
+                sonuc = 0.805 * x * y;
+                return sonuc;
+            }
+            else Console.WriteLine("Hatalı Reynolds Sayısı!!!");
+            return 1;
+
+        }
+        public static double Hhe(double diameter, double nus, double ksabit)
+        {
+            diameter = diameter / 1000;
+            return nus * ksabit / diameter;
+        }
+        public static double sicaklik(double d, double l, double t0, double ts, double ksbit, double h, double x)
+        {
+            double Lc = (l / 1000) + ((d / 1000) / 4);
+            double p = d * Math.PI / 1000;
+            double ac = Math.PI * (d * d) / 4000000;
+            double m = Math.Sqrt((h * p) / (ksbit * ac));
+            double cosh = Math.Cosh(m * Lc);
+            double coshx = Math.Cosh(m * (Lc - x));
+            double tem = (((coshx / cosh) * (t0 - ts)) + ts);
+            return tem;
+        }
+        public static double sicaklik1(double d, double l, double ts, double ksbit, double h, double x,double Q)
+        {
+            double Lc = (l / 1000) + ((d / 1000) / 4);
+            double p = d * Math.PI / 1000;
+            double ac = Math.PI * (d * d) / 4000000;
+            double q = Q / ac;
+            double m = Math.Sqrt((h * p) / (ksbit * ac));
+            double tem = ts + ((q / ((ksbit * m) * (Math.Exp(2 * m * Lc) - 1)) * Math.Exp(m * x)) + ((q * Math.Exp(2 * m * Lc)) / (ksbit * m * (Math.Exp(2 * m * Lc) - 1)) * Math.Exp(-m * x)));
+            return tem;
+        }
+        static double cond(double k, double t, double tb, double ka, double dx)
+        {
+            double q = -k * ka * ((t - tb) / dx);
+            return q;
+        }
+        static double conv(double h, double t, double tb, double ts, double ya)
+        {
+            double q = h*ya*(((t+tb)/2)-ts);
+            return q;
+        }
+        static double nt1(double x, double ka, double dx, double k, double t0)
+        {
+            double q = ((x * dx) / (ka * -k)) + t0;
+            return q;
+        }
+        static double kesit(double dia)
+        {
+            double ac = (dia * dia * Math.PI* 0.000001) / 4;
+            return ac;
+        }
+        static double yüzey(double dia, double dx)
+        {
+            double yanac = (Math.PI * dia * dx )* 0.001;
+            return yanac;
+        }
+        static void yazdır(double t)
+        {
+            StreamWriter yaz = File.AppendText("C:\\Users\\Sinan\\Desktop\\Visual Studio\\heatsink\\solution.out");
+            yaz.WriteLine(t);
+            yaz.Close();
+            yaz.Dispose();
+        }
+        static double atılanıısı(double kmal,double tt,double tb,double Ac,double dx,double htasinim,int cell,double ts,double As)
+        {
+            
+            double q0 = cond(kmal, tt, tb, Ac, dx);
+            double q4 = conv(htasinim, tt, tb, ts, As);
+            double q1 = q0 - q4;
+            double t1 = nt1(q1, Ac, dx, kmal, tt);
+           // Console.WriteLine(t1);
+            yazdır(t1);
+            double[] atılanısı = new double[cell];
+            atılanısı[0] = q1;
+
+            int tekrar = 1;
+            while (true)
+            {
+                if (tekrar > cell - 1)
+                {
+                    break;
+                }
+                double q11 = cond(kmal, t1, tt, Ac, dx);
+                double q5 = conv(htasinim, t1, tt, ts, As);
+                double q2 = q11 - q5;
+                double t2 = nt1(q2, Ac, dx, kmal, t1);
+                //Console.WriteLine(t2);
+                yazdır(t2);
+                atılanısı[tekrar] = q2;
+                tt = t1;
+                t1 = t2;
+                tekrar = tekrar + 1;
+             }
+            return atılanısı[tekrar-1];
+
+        }
+        static void Main(string[] args)
+        {
+            // dizinin 1. indisi hız 2. indisi diamete 3. indisi kinvis 4. indisi prandlt 5. indisi ksabit 6. indisi dia(mm) 7.indisi uzunluk(mm) 8. indisi tb(C) 9. indisi ts(C) 10. indisi k_mal 11. indisi adım uzunuğu[m]
+            StreamReader sr = new StreamReader("C:\\Users\\Sinan\\Desktop\\Visual Studio\\heatsink\\case1.inf");
+            string oku = sr.ReadToEnd();
+            sr.Close();
+            sr.Dispose();
+            string[] inf = oku.Split('£');
+            double hiz = Convert.ToDouble(inf[1]);
+            double diameter = Convert.ToDouble(inf[2]);
+            double kinvis = Convert.ToDouble(inf[3]);
+            double prandtl = Convert.ToDouble(inf[4]);
+            double ksabit = Convert.ToDouble(inf[5]);
+            double uzunluk = Convert.ToDouble(inf[6]);
+            double tb = Convert.ToDouble(inf[7]);
+            double ts = Convert.ToDouble(inf[8]);
+            double kmal = Convert.ToDouble(inf[9]);
+            double mboy = uzunluk / 1000;
+            double adım = Convert.ToDouble(inf[10]);
+            double q = Convert.ToDouble(inf[11]);
+            adım = Math.Round(adım, 3);
+            
+            double reynold = Rehe(hiz, diameter, kinvis);
+            reynold = Math.Round(reynold, 2);
+            double nusselt = Nuhe(reynold, prandtl);
+            nusselt = Math.Round(nusselt, 2);
+            double htasinim = Hhe(diameter, nusselt, ksabit);
+            htasinim = Math.Round(htasinim, 2);
+            Console.WriteLine(reynold);
+            Console.WriteLine(nusselt);
+            Console.WriteLine(htasinim);
+            Console.WriteLine("1-taban sıcaklığı sınır koşulu hesabı");
+            Console.WriteLine("2-sabit ısı sınır koşulu hesabı");
+            Console.WriteLine("3-numerik yaklaşım");
+            
+
+            StreamWriter sw = File.AppendText("C:\\Users\\Sinan\\Desktop\\Visual Studio\\heatsink\\case1.out");
+            sw.WriteLine("Reynolds              Nusselt          htasınım[W/(m^2*C)]          hız[m/s]         diameter[mm]");
+            sw.WriteLine(reynold + "                " + nusselt + "             " + htasinim + "                        " + hiz + "                " + diameter);
+
+            int kontrol = 0;
+            kontrol = Convert.ToInt16(Console.ReadLine());
+            if (kontrol == 1)
+            {
+                double sayi = 0.00;
+
+                while (true)
+                {
+                    if (sayi > mboy)
+                    {
+                        break;
+                    }
+                    double sıc = sicaklik(diameter, uzunluk , tb, ts,kmal, htasinim, sayi);
+                    sıc = Math.Round(sıc, 2);
+                    sw.WriteLine(sayi + " m" + "          " + sıc + " C");
+                    
+                    sayi = sayi + adım;
+                }
+
+            }
+            if (kontrol == 2)
+            {
+                double sayi = 0.00;
+
+                while (true)
+                {
+                    if (sayi > mboy)
+                    {
+                        break;
+                    }
+                    double sıca = sicaklik1(diameter,uzunluk,ts,kmal,htasinim,sayi,q);
+                    sıca = Math.Round(sıca, 2);
+                    sw.WriteLine(sayi + " m" + "          " + sıca + " C");
+
+                    sayi = sayi + adım;
+                }
+
+
+            }
+            else if (kontrol == 3)
+            {
+                Console.WriteLine("cell sayısı girin");
+                int cell = Convert.ToInt16(Console.ReadLine());
+                Console.WriteLine("tahmini t sayısı girin");
+                double tt = Convert.ToDouble(Console.ReadLine());
+                double tt1 = tt;
+                
+
+                double dx = uzunluk / (cell*1000);
+                double Ac = kesit(diameter);
+                double As = yüzey(diameter, dx);
+
+                double q0 = cond(kmal, tt, tb, Ac, dx);
+               // Console.WriteLine(q0+"q0");
+                double q4 = conv(htasinim, tt, tb, ts, As);
+                //Console.WriteLine(q4+"q4");
+                double q1 = q0 - q4;
+                double t1 = nt1(q1, Ac, dx, kmal, tt);
+                Console.WriteLine(t1+"    C");
+                yazdır(t1);
+                double [] atılanısı = new double[cell];
+                atılanısı[0] = q1;
+                //Console.WriteLine(atılanısı[0]+"q1");
+
+                int tekrar = 1;
+                while (true)
+                {
+                    if (tekrar > cell-1)
+                    {
+                        break;
+                    }
+                    double q11 = cond(kmal, t1, tt1, Ac, dx);
+                    double q5 = conv(htasinim, t1, tt1, ts, As);
+                    double q2 = q11 - q5;
+                    double t2 = nt1(q2, Ac, dx, kmal, t1);
+                    Console.WriteLine(t2+"    C");
+                    yazdır(t2);
+                    atılanısı[tekrar] = q2;
+                    tt1 = t1;
+                    t1 = t2;
+                    tekrar = tekrar + 1;
+                }
+                Console.WriteLine(atılanısı.Last());
+                Console.WriteLine("sınır koşulunu girin");
+                double sk = Convert.ToDouble(Console.ReadLine());
+                Console.WriteLine("relaxation değeri girin");
+                double rex = Convert.ToDouble(Console.ReadLine());
+                
+                //Console.WriteLine(atılanısı.Last());
+                double qson = atılanısı.Last();
+                
+                while (true)
+                {
+                    
+                    double err = sk - qson;
+                    double errr = err;
+                    Console.WriteLine(err + "      hata değeri");
+                    err = Math.Abs(err);
+                    if (err<0.0000000002)
+                    {
+                        break;
+                    }
+                    
+                    double corr = errr * rex;
+                    double ntt1 = tt - corr;
+                    double sonatılanısıı = atılanıısı(kmal, ntt1, tb, Ac, dx, htasinim, cell, ts, As);
+                    //Console.WriteLine(sonatılanısıı+"      atılan ısı ");
+                    qson = sonatılanısıı;
+                    //Console.WriteLine(ntt1+"      sıcaklık");
+                    yazdır(ntt1);
+                    tt = ntt1;
+                    
+                }
+
+
+            }
+
+            sw.Close();
+            sw.Dispose();
+
+        }
+
+    }
+
+}

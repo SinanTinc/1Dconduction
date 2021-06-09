@@ -1,0 +1,7 @@
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\bin\Debug\sıcaklıkuzunluk.exe.config
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\bin\Debug\sıcaklıkuzunluk.exe
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\bin\Debug\sıcaklıkuzunluk.pdb
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\obj\Debug\sıcaklıkuzunluk.csprojAssemblyReference.cache
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\obj\Debug\sıcaklıkuzunluk.csproj.CoreCompileInputs.cache
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\obj\Debug\sıcaklıkuzunluk.exe
+C:\Users\Sinan\Desktop\Visual Studio\heatsink\sıcaklıkuzunluk\sıcaklıkuzunluk\obj\Debug\sıcaklıkuzunluk.pdb
